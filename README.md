@@ -73,9 +73,9 @@ sudo vim /etc/hosts
 # Disable swap:
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-<br>
+  
 #Create config file for modules:
-sudo tee /etc/modules-load.d/containerd.conf<<EOF
+sudo tee /etc/modules-load.d/containerd.conf<<<EOF
 overlay
 br_netfilter
 EOF
@@ -83,15 +83,14 @@ EOF
 #Load modules:
 sudo modprobe overlay
 sudo modprobe br_netfilter
-<br>
 #Create another config file for sysctl:
-sudo tee /etc/sysctl.d/kubernetes.conf<<EOF
+sudo tee /etc/sysctl.d/kubernetes.conf<br><<EOF                                       
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 EOF
 <br>
-# Apply sysctl parameters:
+#Apply sysctl parameters:
 sudo sysctl --system
 <br>
 #Update apt source list:
@@ -100,23 +99,23 @@ sudo apt-get update
 #Install containerd (or Docker which contains containerd):
 sudo apt-get install docker.io -y
 <br>
-# Configure containerd for the cgroup driver used by kubeadm (systemd):
+#Configure containerd for the cgroup driver used by kubeadm (systemd):
 sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 <br>
-# Restart and enable containerd:
+#Restart and enable containerd:
 sudo systemctl restart containerd
 sudo systemctl enable containerd
 <br>
-# Install helper tools:
+#Install helper tools:
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 sudo mkdir -p -m 755 /etc/apt/keyrings
 <br>
-# Download the public signing key for the Kubernetes package repositories:
+#Download the public signing key for the Kubernetes package repositories:
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 <br>
-# Add the Kubernetes apt repository for v1.29:
+#Add the Kubernetes apt repository for v1.29:
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 <br>
 # Update apt source list, install kubelet, kubeadm and kubectl and hold them at the current version:
@@ -130,8 +129,8 @@ sudo apt-mark hold kubelet kubeadm kubectl
  
 <pre>
  <code>
-# Initialize the cluster:
-# If you use master node and workers with 192.168.X.X subnets use pod CIDR as following:
+#Initialize the cluster:
+#If you use master node and workers with 192.168.X.X subnets use pod CIDR as following:
 sudo kubeadm init --apiserver-advertise-address=192.168.50.20 --pod-network-cidr=110.244.0.0/16
    <br>
 # If you use any subnets (ex:10.10.X.X) use pod CIDR as following:
