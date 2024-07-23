@@ -289,26 +289,18 @@ app: {{ .Release.Name }}
 </pre>
 
 <h3>Now override the values.yaml file with below content: </h3>
+
 <pre>
- <code>
-   
-#Default values for nginx-chart.
-#This is a YAML-formatted file.
-#Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-#Overrides the image tag whose default is the chart appVersion.
-tag: ""
-
-service:
-  type: NodePort
-  port: 80
-  
-</code>
+<code>
+  replicaCount: 1
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: NodePort
+    port: 80
+ </code>
 </pre>
 
 <h3>Now helm chart is ready to deploy</h3>
@@ -544,5 +536,20 @@ terraform apply
 <h4>Confirm the action by typing yes and pressing Enter.</h4>
 <h2>Validate deployment</h2>
 <h3>On master node run the following command to get the port of the application</h3>
-
-
+<pre>
+  <code>
+    kubectl get svc
+  </code>
+</pre>
+<h3>You should see this output get the port as pointed in this image (31126)</h3>
+![Capture1](https://github.com/user-attachments/assets/d0434046-24e8-4001-bdc2-3742c946daad)
+<h3>In your browser write the following URL</h3>
+<pre><code> 
+http://WorkerNodeIP:port
+</code></pre>
+<h3>In our example</h3>
+<pre><code> 
+http://192.168.50.11:31126
+</code></pre>
+<h3>You should see nginx server</h3>
+![Capture](https://github.com/user-attachments/assets/2ba38795-72fd-400d-87f1-28e626c326bc)
