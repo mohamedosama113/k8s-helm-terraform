@@ -1,4 +1,4 @@
-<h1>Kubernetes Cluster Setup with NGINX Deployment</h1>
+<h1>Kubernetes Cluster setup and Nginx app deployment using Helm and Terraform</h1>
 <h2>Introduction</h2>
 <p>This project aims to set up a Kubernetes cluster using kubeadm, Flannel, and Vagrant, followed by deploying an NGINX server using Helm and Terraform.</p>
 
