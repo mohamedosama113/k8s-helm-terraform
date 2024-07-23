@@ -58,10 +58,14 @@ end
 <pre><code>vagrant ssh worker2</code></pre>
 
 <h4>Edit /etc/hosts file in master and 2 workers VMs </h4>
-<pre><code>#Add master and workers dns entries
+<pre><code>
+#edit hosts files using vim or nano editors
+sudo vim /etc/hosts
+#Add master and workers dns entries
 192.168.50.10  master
 192.168.50.11  worker1
 192.168.50.12  worker2
+#save and quit
 </code></pre>
 <h4>Follow instructions to setup the cluster</h4>
 <pre>
