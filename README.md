@@ -336,8 +336,9 @@ cat ~/.kube/config
    #put the output here and save file
  </code>
 </pre>
-<h3>Create the main.tf file with the following configuration:
+<h3>Create the main.tf file in terraform-helm-nginx folder with the following configuration:
 </h3>
+
 <pre>
  <code>
 terraform {
