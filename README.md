@@ -494,17 +494,7 @@ data "kubernetes_service" "nginx" {
  </code>
 </pre>
 
-<h3>variables.tf for Nginx Deployment</h3>
-<pre>
- <code>
-variable "kube_config_path" {
-  description = "Path to the kubeconfig file"
-  type        = string
-  default     = "./.kube/config"
-}
 
- </code>
-</pre>
 
 <h2>Deploy the Cluster and Applications</h2>
 <h3>The Final Structure should be</h3>
