@@ -196,7 +196,7 @@ cd nginx-chart
 rm -rf templates/*
  </code>
 </pre>
-<h3>Update with the below files</h3>
+<h3>Update with the below files in templates folder</h3>
 <h4>deployment.yaml
 </h4>
 <pre>
