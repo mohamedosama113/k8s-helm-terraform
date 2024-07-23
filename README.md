@@ -162,6 +162,14 @@ kubeadm token create --print-join-command
         --discovery-token-ca-cert-hash sha256:acbc86ffda15234ceb3493a81d10ef5d9601eee59c548303c7251a90336031fe
 </code>
 </pre>
+<h2>Prepare helm chart for nginx befor deploy it</h2>
+<h3>Create a Helm Chart for Nginx using below command:</h3>
+<pre>
+ <code>
+helm create nginx-chart
+ </code>
+</pre>
+<h3>Helm will create a new directory in your project called nginc-hart with the structure shown below.</h3>
 
 
 
