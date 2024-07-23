@@ -332,7 +332,7 @@ cat ~/.kube/config
    #On terraform-helm-nginx folder create folder with name .kube
    mkdir .kube
    cd .kube
-   touch config
+   vim config
    #put the output here and save file
  </code>
 </pre>
