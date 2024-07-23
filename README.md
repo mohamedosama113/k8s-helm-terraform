@@ -158,11 +158,12 @@ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0
 <pre>
  <code>
 #Use the kubeadm join command generated when you initialize the cluster. If you miss it, use this command to generate it:
+#don't forget sudo
 kubeadm token create --print-join-command
 <br>
 #Use the generated command on worker nodes to join the cluster.
 # something like that
-# kubeadm join 192.168.50.10:6443 --token zbgmvn.oc1keoodyvdqrnko \
+# sudo kubeadm join 192.168.50.10:6443 --token zbgmvn.oc1keoodyvdqrnko \
         --discovery-token-ca-cert-hash sha256:acbc86ffda15234ceb3493a81d10ef5d9601eee59c548303c7251a90336031fe
 </code>
 </pre>
