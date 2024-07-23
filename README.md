@@ -192,7 +192,7 @@ nginx-chart
 <h3>Here remove all files under templates/ </h3>
 <pre>
  <code>
-      cd nginx-chart
+cd nginx-chart
 rm -rf templates/*
  </code>
 </pre>
