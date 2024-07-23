@@ -15,7 +15,7 @@ provider "helm" {
 
 resource "helm_release" "nginx" {
   name      = "nginx"
-  chart     = "../terraform-apps/nginx/nginxChart"  # Path to your local Helm chart
+  chart     = "../terraform-apps/nginx/nginx-chart"  # Path to your local Helm chart
   version   = "1.16.0"          # Adjust the version if needed
 
   set {
