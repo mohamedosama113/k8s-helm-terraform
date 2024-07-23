@@ -171,7 +171,6 @@ kubeadm token create --print-join-command
 <h3>Create a Helm Chart for Nginx using below command:</h3>
 <pre>
  <code>
-   cd nginx-chart
 helm create nginx-chart
  </code>
 </pre>
@@ -193,6 +192,7 @@ nginx-chart
 <h3>Here remove all files under templates/ </h3>
 <pre>
  <code>
+      cd nginx-chart
 rm -rf templates/*
  </code>
 </pre>
