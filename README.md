@@ -75,7 +75,7 @@ sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
   
 #Create config file for modules:
-sudo tee /etc/modules-load.d/containerd.conf<<<EOF
+sudo tee /etc/modules-load.d/containerd.conf<<EOF
 overlay
 br_netfilter
 EOF
