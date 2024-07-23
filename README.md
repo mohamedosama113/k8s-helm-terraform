@@ -132,7 +132,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 #Initialize the cluster:
 #This will take some minutes
 #If you use master node and workers with 192.168.X.X subnets use pod CIDR as following:(our case)
-sudo kubeadm init --apiserver-advertise-address=192.168.50.10 --pod-network-cidr=110.244.0.0/16
+sudo kubeadm init --apiserver-advertise-address=192.168.50.10 --pod-network-cidr=10.244.0.0/16
    <br>
 # If you use any subnets (ex:10.10.X.X) use pod CIDR as following:
 sudo kubeadm init --apiserver-advertise-address=10.10.X.X --pod-network-cidr=192.168.0.0/16
@@ -287,24 +287,28 @@ app: {{ .Release.Name }}
 {{- end }}
  </code>
 </pre>
+
 <h3>Now override the values.yaml file with below content: </h3>
 <pre>
  <code>
-# Default values for nginx-chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+   
+#Default values for nginx-chart.
+#This is a YAML-formatted file.
+#Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
   repository: nginx
   pullPolicy: IfNotPresent
-  #Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+#Overrides the image tag whose default is the chart appVersion.
+tag: ""
 
 service:
   type: NodePort
-  port: 80 </code>
+  port: 80
+  
+</code>
 </pre>
 
 <h3>Now helm chart is ready to deploy</h3>
