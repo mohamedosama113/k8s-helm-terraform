@@ -39,9 +39,9 @@ Vagrant.configure("2") do |config|
       worker.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"
         vb.cpus = 2
+        end
       end
     end
-  end
 end
 </code>
 </pre>
