@@ -300,7 +300,6 @@ image:
   repository: nginx
   pullPolicy: IfNotPresent
   #Overrides the image tag whose default is the chart appVersion.
-  <br>
   tag: ""
 
 service:
@@ -539,4 +538,7 @@ terraform apply
  </code>
 </pre>
 <h4>Confirm the action by typing yes and pressing Enter.</h4>
+<h2>Validate deployment</h2>
+<h3>On master node run the following command to get the port of the application</h3>
+
 
