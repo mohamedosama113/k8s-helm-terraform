@@ -130,8 +130,8 @@ sudo apt-mark hold kubelet kubeadm kubectl
 <pre>
  <code>
 #Initialize the cluster:
-#If you use master node and workers with 192.168.X.X subnets use pod CIDR as following:
-sudo kubeadm init --apiserver-advertise-address=192.168.50.20 --pod-network-cidr=110.244.0.0/16
+#If you use master node and workers with 192.168.X.X subnets use pod CIDR as following:(our case)
+sudo kubeadm init --apiserver-advertise-address=192.168.50.10 --pod-network-cidr=110.244.0.0/16
    <br>
 # If you use any subnets (ex:10.10.X.X) use pod CIDR as following:
 sudo kubeadm init --apiserver-advertise-address=10.10.X.X --pod-network-cidr=192.168.0.0/16
