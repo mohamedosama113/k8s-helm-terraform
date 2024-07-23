@@ -494,8 +494,13 @@ data "kubernetes_service" "nginx" {
  </code>
 </pre>
 
-
-
+<h2>Before deploy move nginx-chart in nginx folder</h2>
+<pre>
+ <code>
+mv nginx-chart/ terraform-app/nginx/
+  </code>
+</pre>
+   
 <h2>Deploy the Cluster and Applications</h2>
 <h3>The Final Structure should be</h3>
 <pre>
