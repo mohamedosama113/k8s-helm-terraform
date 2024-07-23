@@ -170,6 +170,371 @@ helm create nginx-chart
  </code>
 </pre>
 <h3>Helm will create a new directory in your project called nginc-hart with the structure shown below.</h3>
+<pre>
+ <code>
+nginx-chart
+|-- Chart.yaml
+|-- charts
+|-- templates
+|   |-- NOTES.txt
+|   |-- _helpers.tpl
+|   |-- deployment.yaml
+|   |-- ingress.yaml
+|   `-- service.yaml
+`-- values.yaml
+ </code>
+</pre>
+<h3>Here remove all files under templates/ </h3>
+<pre>
+ <code>
+rm -rf templates/*
+ </code>
+</pre>
+<h3>Update with the below files</h3>
+<h4>deployment.yaml
+</h4>
+<pre>
+ <code>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "nginx-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nginx-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nginx-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+ </code>
+</pre>
+<h4>service.yaml
+</h4>
+<pre>
+ <code>
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-svc
+  labels:
+    {{- include "nginx-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "nginx-chart.selectorLabels" . | nindent 4 }}
+ </code>
+</pre>
+<h4>_helper.tpl</h4>
+<pre>
+ <code>
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "nginx-chart.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "nginx-chart.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "nginx-chart.labels" -}}
+helm.sh/chart: {{ include "nginx-chart.chart" . }}
+{{ include "nginx-chart.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "nginx-chart.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "nginx-chart.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app: {{ .Release.Name }}
+{{- end }}
+ </code>
+</pre>
+<h3>Now override the values.yaml file with below content: </h3>
+<pre>
+ <code>
+# Default values for nginx-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  #Overrides the image tag whose default is the chart appVersion.
+  <br>
+  tag: ""
+
+service:
+  type: NodePort
+  port: 80 </code>
+</pre>
+
+<h3>Now helm chart is ready to deploy</h3>
 
 
+<h2>Final Step:Deploy nginx chart with terraform</h2>
+
+<h3>Create a new directory for your Terraform project:
+</h3>
+<pre>
+ <code>
+mkdir terraform-helm-nginx
+cd terraform-helm-nginx
+ </code>
+</pre>
+<h3>Copy.kube config folder from master node to terraform-helm-nginx folder
+</h3>
+<pre>
+ <code>
+#SSH to master node
+vagrant ssh master
+cat ~/.kube/config
+   #copy the output
+   #On terraform-helm-nginx folder create folder with name .kube
+   mkdir .kube
+   cd .kube
+   touch config
+   #put the output here and save file
+ </code>
+</pre>
+<h3>Create the main.tf file with the following configuration:
+</h3>
+<pre>
+ <code>
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.0"
+    }
+  }
+  required_version = ">= 1.0"
+}
+
+provider "kubernetes" {
+  config_path = var.kube_config_path
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = var.kube_config_path
+  }
+}
+
+module "nginx" {
+  source          = "../terraform-apps/nginx"
+  kube_config_path = var.kube_config_path
+}
+
+resource "kubernetes_namespace" "nginx-k8s" {
+  metadata {
+    name = "nginx-k8s"
+  }
+}
+ </code>
+</pre>
+<h3>This configuration does the following:</h3>
+<ul>
+<li>Specifies the required Helm and Kubernetes providers.</li>
+<li>Configures the Kubernetes provider to use your kubeconfig file.</li>
+<li>Configures the Helm provider to use your Kubernetes context.</li>
+<li>Defines a Helm release resource to deploy the Nginx chart from the Bitnami repository.</li>
+  </ul>
+<h3>variables.tf for Kubernetes Cluster</h3>
+<pre>
+ <code>
+variable "kube_config_path" {
+  description = "Path to the kubeconfig file"
+  type        = string
+  default     = "./.kube/config"
+}
+ </code>
+</pre>
+
+<h3>outputs.tf for Kubernetes Cluster</h3>
+<pre>
+ <code>
+output "nginx_release_name" {
+  description = "The name of the Nginx Helm release"
+  value       = module.nginx.nginx_release_name
+}
+
+output "nginx_release_status" {
+  description = "The status of the Nginx Helm release"
+  value       = module.nginx.nginx_release_status
+
+ </code>
+</pre>
+
+
+<h2>Application Module Configuration</h2>
+<h3>Create a separate directory for each application you want to deploy ex. terraform-apps</h3>
+<h3>Directory Structure</h3>
+<pre>
+ <code>
+terraform-apps/
+├── nginx/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+
+ </code>
+</pre>
+
+<h3>main.tf for Nginx Deployment</h3>
+<pre>
+ <code>
+terraform {
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2"
+    }
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = var.kube_config_path
+  }
+}
+
+resource "helm_release" "nginx" {
+  name      = "nginx"
+  chart     = "../terraform-apps/nginx/nginx-chart"  # Path to your local Helm chart
+  version   = "1.16.0"          # Adjust the version if needed
+
+  set {
+    name  = "service.type"
+    value = "NodePort"
+  }
+}
+ </code>
+</pre>
+
+
+<h3>variables.tf for Nginx Deployment</h3>
+<pre>
+ <code>
+variable "kube_config_path" {
+  description = "Path to the kubeconfig file"
+  type        = string
+  default     = "./.kube/config"
+}
+
+ </code>
+</pre>
+
+<h3>outputs.tf for Nginx Deployment</h3>
+<pre>
+ <code>
+output "nginx_release_name" {
+  description = "The name of the Helm release"
+  value       = helm_release.nginx.name
+}
+
+output "nginx_release_status" {
+  description = "The status of the Helm release"
+  value       = helm_release.nginx.status
+}
+
+
+data "kubernetes_service" "nginx" {
+  metadata {
+    name      = helm_release.nginx.name
+    namespace = helm_release.nginx.namespace
+  }
+}
+
+
+ </code>
+</pre>
+
+<h3>variables.tf for Nginx Deployment</h3>
+<pre>
+ <code>
+variable "kube_config_path" {
+  description = "Path to the kubeconfig file"
+  type        = string
+  default     = "./.kube/config"
+}
+
+ </code>
+</pre>
+
+<h2>Deploy the Cluster and Applications</h2>
+<h3>The Final Structure should be</h3>
+<pre>
+ <code>
+project 
+├── terraform-k8s-cluster/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+└── terraform-apps/
+    └── nginx/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+    </code>
+</pre>
+<h3>Navigate to your main Kubernetes cluster directory:</h3>
+
+<pre>
+ <code>
+cd terraform-k8s-cluster
+    </code>
+</pre>
+<h3>Initialize Terraform:</h3>
+
+<pre>
+ <code>
+terraform init
+       </code>
+</pre>
+<h3>Apply the Terraform configuration:</h3>
+
+<pre>
+ <code>
+terraform apply
+ </code>
+</pre>
+<h4>Confirm the action by typing yes and pressing Enter.</h4>
 
